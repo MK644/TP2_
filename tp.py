@@ -44,7 +44,7 @@ class Labyrinte:
                                 voisin = (nx, ny)
                                 self.objet.ajouteArete(point, voisin)
 
-    #dfs
+    #GLAZE MOI BITCH
 
     def parcours_profondeur_laby(self, G,depart,arrivee):
         '''Parcours d'un graphe en profondeur Ã  partir du sommet dÃ©part'''
