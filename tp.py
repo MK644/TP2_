@@ -20,10 +20,10 @@ laby = [[0, 0, 1, 1, 0, 1, 1, 1, 1],
 class Labyrinte:
     def __init__(self,lab,depart, arrivee):
         self.lab = lab
-        depart = depart.strip("()")  #transforme en tuple
+        depart = depart.strip("()")  
         i, j = depart.split(",")
         self.depart = (int(i), int(j))
-        arrivee = arrivee.strip("()")  # transforme en tuple
+        arrivee = arrivee.strip("()")  
         i2,j2 = arrivee.split(",")
         self.arrivee = (int(i2), int(j2))
         self.objet=Graphe()
