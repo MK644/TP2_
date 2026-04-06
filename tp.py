@@ -20,8 +20,12 @@ laby = [[0, 0, 1, 1, 0, 1, 1, 1, 1],
 class Labyrinte:
     def __init__(self,lab,depart, arrivee):
         self.lab = lab
-        self.depart = depart
-        self.arrivee = arrivee
+        depart = depart.strip("()")  #transforme en tuple
+        i, j = depart.split(",")
+        self.depart = (int(i), int(j))
+        arrivee = arrivee.strip("()")  # transforme en tuple
+        i2,j2 = arrivee.split(",")
+        self.arrivee = (int(i2), int(j2))
         self.objet=Graphe()
         lignes = len(self.lab)
         colonnes = len(self.lab[0])
@@ -39,10 +43,6 @@ class Labyrinte:
                             if self.lab[nx][ny] == 0:
                                 voisin = (nx, ny)
                                 self.objet.ajouteArete(point, voisin)
-                                
-
-
-
 
     #dfs
 
@@ -50,18 +50,29 @@ class Labyrinte:
         '''Parcours d'un graphe en profondeur Ã  partir du sommet dÃ©part'''
 
         marque = set()# ensemble des sommets deja visitÃ©s
-        if depart==arrivee:
-            print(marque)
-
+        chemin=[]
         def parcours_aux(G, som):
+            chemin.append(som)
+            if som._nom == G.sommet(arrivee)._nom:
+                if chemin==[]:
+                    for b in marque:
+                        chemin.append(b)
 
+                return True
             marque.add(som)
-
             for voisin in som.listeVoisins():
-                if voisin not in marque:
-                    parcours_aux(G, voisin)
 
-        parcours_aux(G, depart)
+                if voisin not in marque:
+                    if parcours_aux(G, voisin):
+                        return True
+            chemin.pop()
+            return False
+
+        if parcours_aux(G, G.sommet(depart)):
+            print("Sommets visités :", [str(s._nom) for s in chemin])
+        else:
+            print('Aucun chemin.')
+
 
     #bfs
     def parcours_largeur_laby(self, G, depart, arrivee):
@@ -83,7 +94,7 @@ class Labyrinte:
 
 
 
-c=Labyrinte(laby,'(0,0)', "(4,4)")
-print(c.solutiondfst())
+c=Labyrinte(laby,'(0,0)', "(7,4)")
 
+c.solutiondfst()
 
