@@ -15,7 +15,7 @@ laby = [[0, 0, 1, 1, 0, 1, 1, 1, 1],
         [0, 0, 1, 1, 0, 1, 0, 0, 1],
         [1, 1, 0, 1, 0, 0, 0, 1, 1],
         [1, 1, 1, 0, 1, 1, 0, 0, 0]]
-https://code-with-me.global.jetbrains.com/6kwZq8ikob5quMIZm03gRA
+https://code-with-me.global.jetbrains.com/X3x8wx5AhwEyRnNtOaiprw
 
 class Labyrinte:
     def __init__(self,lab,depart, arrivee):
