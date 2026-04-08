@@ -22,60 +22,75 @@ class Labyrinte:
 
 
     def __init__(self,lab,depart, arrivee):
-
-        def coord(s):
+        self.lab = lab
+        def coord(s):       #transforme les coordonnés des objet en tuple
             s = s.strip().strip("()") # enleve les espaces + parenthese
             parties = s.split(",")
             if len(parties) != 2:
                 raise ValueError("Format invalide")
             try:
-                return (int(parties[0].strip()), int(parties[1].strip()))
+                if self.lab[int(parties[0])][int(parties[1])] == 0:
+                    return (int(parties[0].strip()), int(parties[1].strip()))
+                else:
+                    print("point de départ ou arrivée invalide")
+                    return None
             except ValueError:
                 raise ValueError("coordonner non entiere")
 
         self.depart = coord(depart)
         self.arrivee = coord(arrivee)
 
-        self.lab = lab
+
         self.objet=Graphe()
         lignes = len(self.lab)
         colonnes = len(self.lab[0])
-# ajout les voisin
-        for x in range(lignes):
-            for y in range(colonnes):
+        # ajout des voisins
+        for y in range(lignes):
+            for x in range(colonnes):
 
-                if self.lab[x][y] == 0:
-                    point = (x, y)
+                if self.lab[y][x] == 0: #vérifie si le point actuelle n'est pas un mur
+                    point = (y, x)
 
-                    directions = [(x - 1, y),  (x + 1, y), (x, y - 1),  (x, y + 1)]
-                    for nx, ny in directions:
+                    directions = [(y - 1, x),   #haut
+                                  (y + 1, x),   #bas
+                                  (y, x - 1),   #gauche
+                                  (y, x + 1)]   #droite
+                    for ny, nx in directions:
 
-                        if 0 <= nx < lignes and 0 <= ny < colonnes:
-                            if self.lab[nx][ny] == 0:
-                                voisin = (nx, ny)
+                        if 0 <= ny < lignes and 0 <= nx < colonnes:
+                            if self.lab[ny][nx] == 0:       #si le point voisin est égal a 0 alors ce n'est
+                                                            # pas un mur et donc on peut l'ajouter comme voisin
+                                voisin = (ny, nx)
                                 self.objet.ajouteArete(point, voisin)
+
 
     #dfs
 
-    def parcours_profondeur_laby(self, G,depart,arrivee):
-        '''Parcours d'un graphe en profondeur Ã  partir du sommet dÃ©part'''
-        arrivee=G.sommet(arrivee)
-        marque = set()# ensemble des sommets deja visité
-        chemin=[]
-        def parcours_aux(G, som):
-            chemin.append(som)
+    def parcours_profondeur_laby_rec(self, G,depart,arrivee):
+        '''Parcours d'un graphe en longueur a  partir du sommet départ jusqu'au sommet arrivée'''
 
-            if som._nom == arrivee._nom:
+        if depart== None or arrivee == None:
+            return None
+        else:
+            arrivee=G.sommet(arrivee)
+            nomarrivée=arrivee._nom
+            marque = set()  # ensemble des sommets deja visité
+            chemin=[] # liste des sommet parcourue qui amène au sommet arrivée
+            def parcours_aux(G, som):
+                chemin.append(som) #ajoute le sommet parcouru à la liste
 
-                return True
-            marque.add(som)
-            for voisin in som.listeVoisins():
+                if som._nom == nomarrivée : #la fonction vérifie si le point visité est l'arrivée
 
-                if voisin not in marque:
-                    if parcours_aux(G, voisin):
-                        return True
-            chemin.pop() #si la fonction recule, elle enleve le point qu'elle avait parcourue
-            return False
+                    return True
+
+                marque.add(som)
+                for voisin in som.listeVoisins():
+
+                    if voisin not in marque: #la fonction s'assure que le sommet n'est pas dans l'ensemble si non elle tourne en rond
+                        if parcours_aux(G, voisin): #appelle recursif
+                            return True
+                chemin.pop() #si la fonction recule, elle enleve le point qu'elle avait parcourue
+                return False
 
         if parcours_aux(G, G.sommet(depart)):
             print("Sommets visités :", [str(s._nom) for s in chemin])
@@ -86,41 +101,49 @@ class Labyrinte:
 
     #bfs
     def parcours_largeur_laby(self, G, depart, arrivee):
-        '''Parcours d'un graphe en largeur Ã  partir du sommet dÃ©part'''
-        marque = set()
-        chemin=[]
-        parent={}
-        parent[depart] = None
-        depart=G.sommet(depart)
-        arrivee=G.sommet(arrivee)
-        f = File()
-        f.enfile(depart)
-        while not f.estvide():
-            s = f.defile()
-            if s._nom == arrivee._nom:
+        '''Parcours d'un graphe en largeur a  partir du sommet départ jusqu'au sommet arrivée'''
+        if depart == None or arrivee == None:
+            return None
+        else:
+            marque = set()
+            chemin=[] #chemin des point parcouru
+            parent={} # dictionnaire permettant de savoir l'origine de chaque point parcourue
+            parent[depart] = None #le point de départ n'a pas d'origine
+            depart=G.sommet(depart)
+            arrivee=G.sommet(arrivee)
+            nom_arrivee = arrivee._nom
+            f = File()
+            f.enfile(depart) #enfile le depart
+            while not f.estvide(): #si file est vide la boucle s'arrete et on ne peut pas trouver de chemin
+                s = f.defile()
+                if s._nom == nom_arrivee: #la fonction vérifie si le point visité est l'arrivée
 
-                break
+                    break
 
-            if s not in marque:
-                marque.add(s)
+                if s not in marque:
+                    marque.add(s)
 
-                for voisin in s.listeVoisins():
-                    if voisin not in marque and voisin not in parent:
-                        f.enfile(voisin)
-                        parent[voisin] = s
+                    for voisin in s.listeVoisins():
+                        if voisin not in marque and voisin not in parent:#la fonction s'assure que le sommet n'est
+                                                                        # pas dans l'ensemble sinon elle tourne en rond
+                            f.enfile(voisin)
+                            parent[voisin] = s
+            if f.estvide():
 
-        courant = arrivee
-        while courant is not None:
-            chemin.append(courant)
-            courant = parent.get(courant)
-        chemin.reverse()
-        print("Sommets visités :", [str(s._nom) for s in chemin])
-        return chemin
+                print("Aucun chemin trouvé")
+                return None
+            courant = arrivee
+            while courant is not None:#ajoute les sommets parcourus en ordre inverse
+                chemin.append(courant)
+                courant = parent.get(courant) #remplace le point actuelle par son origine
+            chemin.reverse()
+            print("Sommets visités :", [str(s._nom) for s in chemin])
+            return chemin
 
 
 
-    def solutiondfst(self):
-        return self.parcours_profondeur_laby(self.objet,self.depart,self.arrivee)
+    def solutiondfs(self):
+        return self.parcours_profondeur_laby_rec(self.objet,self.depart,self.arrivee)
     def solutionbfs(self):
         return self.parcours_largeur_laby(self.objet,self.depart,self.arrivee)
 
@@ -130,84 +153,87 @@ class Labyrinte:
         """
         # On calcule la distance directement ici au lieu de la demander aux algos
         # La distance est le nombre de cases du chemin - 1 (les arêtes)
-        distance = len(chemin) - 1 if chemin else 0
+        if chemin ==None:
+            return None
+        else:
+            distance = len(chemin) - 1 if chemin else 0
 
-        # On récupère les dimensions depuis self.lab (puisque self.nb_lignes n'est pas défini dans le __init__)
-        nb_lignes = len(self.lab)
-        nb_cols = len(self.lab[0])
-        TAILLE = 30
+            # On récupère les dimensions depuis self.lab (puisque self.nb_lignes n'est pas défini dans le __init__)
+            nb_lignes = len(self.lab)
+            nb_cols = len(self.lab[0])
+            TAILLE = 30
 
-        ecran = turtle.Screen()
-        ecran.setup(width=600, height=600)
-        ecran.title(f"{titre} - Distance: {distance} arêtes")
-        ecran.tracer(0)
+            ecran = turtle.Screen()
+            ecran.setup(width=600, height=600)
+            ecran.title(f"{titre} - Distance: {distance} arêtes")
+            ecran.tracer(0)
 
-        t = turtle.Turtle()
-        t.hideturtle()
+            t = turtle.Turtle()
+            t.hideturtle()
 
-        # Calcul pour centrer parfaitement
-        ox = -nb_cols * TAILLE / 2
-        oy = nb_lignes * TAILLE / 2
+            # Calcul pour centrer parfaitement
+            ox = -nb_cols * TAILLE / 2
+            oy = nb_lignes * TAILLE / 2
 
-        # Dessin de la grille
-        for x in range(nb_lignes):
-            for y in range(nb_cols):
-                px, py = ox + y * TAILLE, oy - x * TAILLE
+            # Dessin de la grille
+            for x in range(nb_lignes):
+                for y in range(nb_cols):
+                    px, py = ox + y * TAILLE, oy - x * TAILLE
 
-                # Choix de la couleur
-                if self.lab[x][y] == 1:
-                    color = "black"
-                elif (x, y) == self.depart:
-                    color = "green"
-                elif (x, y) == self.arrivee:
-                    color = "red"
-                else:
-                    color = "white"
+                    # Choix de la couleur
+                    if self.lab[x][y] == 1:
+                        color = "black"
+                    elif (x, y) == self.depart:
+                        color = "green"
+                    elif (x, y) == self.arrivee:
+                        color = "red"
+                    else:
+                        color = "white"
 
+                    t.penup()
+                    t.goto(px, py)
+                    t.pendown()
+                    t.fillcolor(color)
+                    t.begin_fill()
+                    for _ in range(4):
+                        t.forward(TAILLE)
+                        t.right(90)
+                    t.end_fill()
+
+            ecran.update()
+
+            # Dessin du chemin
+            if chemin:
+                ecran.tracer(1)
                 t.penup()
-                t.goto(px, py)
-                t.pendown()
-                t.fillcolor(color)
-                t.begin_fill()
-                for _ in range(4):
-                    t.forward(TAILLE)
-                    t.right(90)
-                t.end_fill()
+                t.pensize(3)
+                t.pencolor(couleur_chemin)
 
-        ecran.update()
+                for i, etape in enumerate(chemin):
+                    # Tes algos retournent des objets "Sommet" de graphelib.
+                    # L'attribut _nom contient déjà le tuple de coordonnées (x, y) ! Pas besoin de eval().
+                    coord_tuple = etape._nom
 
-        # Dessin du chemin
-        if chemin:
-            ecran.tracer(1)
-            t.penup()
-            t.pensize(3)
-            t.pencolor(couleur_chemin)
+                    # Aller au centre de la case
+                    cx = ox + coord_tuple[1] * TAILLE + TAILLE / 2
+                    cy = oy - coord_tuple[0] * TAILLE - TAILLE / 2
+                    t.goto(cx, cy)
+                    t.pendown()
+                    if i == 0:
+                        t.dot(10, "green")
 
-            for i, etape in enumerate(chemin):
-                # Tes algos retournent des objets "Sommet" de graphelib.
-                # L'attribut _nom contient déjà le tuple de coordonnées (x, y) ! Pas besoin de eval().
-                coord_tuple = etape._nom
+                t.dot(10, "red")
 
-                # Aller au centre de la case
-                cx = ox + coord_tuple[1] * TAILLE + TAILLE / 2
-                cy = oy - coord_tuple[0] * TAILLE - TAILLE / 2
-                t.goto(cx, cy)
-                t.pendown()
-                if i == 0:
-                    t.dot(10, "green")
-
-            t.dot(10, "red")
-
-        print(f"Visualisation terminée. Distance : {distance}")
-        turtle.done()
+            print(f"Visualisation terminée. Distance : {distance}")
+            turtle.done()
 
 
 
 c = Labyrinte(laby, '(0,0)', '(7,4)')
+c.solutiondfs()
 c.solutionbfs()
-c.solutiondfst()
 # On récupère juste le chemin
-chemin_bfs = c.solutionbfs()
+chemin_bfs = c.solutiondfs()
 
 # On passe ce chemin directement à la visualisation
 c.visualiser(chemin_bfs, titre="Solution DFS", couleur_chemin="blue")
