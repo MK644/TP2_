@@ -93,7 +93,7 @@ class Labyrinte:
                 return False
 
         if parcours_aux(G, G.sommet(depart)):
-            print("Sommets visités :", [str((s._nom[1],s._nom[0])) for s in chemin])
+            print(f"Félicitation ! vous avez réussi à trouver l'arrivée qui est la case : {nomarrivée} par le chemin: {[str((s._nom[1],s._nom[0])) for s in chemin]}")
             return chemin
         else:
             print('Aucun chemin.')
@@ -137,7 +137,8 @@ class Labyrinte:
                 chemin.append(courant)
                 courant = parent.get(courant) #remplace le point actuelle par son origine
             chemin.reverse()
-            print("Sommets visités :", [str((s._nom[1],s._nom[0]))for s in chemin])
+            print(f"Félicitation ! vous arrivez à l'arrivée qui est la case: {nom_arrivee} par le chemin: {[str((s._nom[1],s._nom[0])) for s in chemin]}")
+            print(f"C'est le chemin le plus court pour parcourir ce labyrinthe et la distance totale est de : {dist} arêtes")
             return chemin
 
 
