@@ -135,7 +135,7 @@ class Labyrinte:
                 courant = parent.get(courant)  # remplace le point actuelle par son origine
             chemin.reverse()
             print(
-                f"Félicitation ! vous arrivez à l'arrivée qui est la case: {str((nom_arrivee[1], nom_arrivee[0]))} par le chemin: {[str((s._nom[1], s._nom[0])) for s in chemin]}")
+                f"Félicitation ! vous avez réussi à trouver l'arrivée qui est la case : {str((nom_arrivee[1], nom_arrivee[0]))} par le chemin: {[str((s._nom[1], s._nom[0])) for s in chemin]}")
 
             return chemin
 
