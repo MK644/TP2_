@@ -150,7 +150,7 @@ class Labyrinte:
         return self.parcours_largeur_laby(self.objet,self.depart,self.arrivee)
 
     def visualiser(self, chemin, titre="Solution Labyrinthe", couleur_chemin="blue"):
-        
+        #On calcule la distance  ici
         if chemin ==None:
             return None
         else:
@@ -167,14 +167,14 @@ class Labyrinte:
 
             t = turtle.Turtle()
             t.hideturtle()
-
+              # alcul pour centrer parfaitement
             ox = -nb_cols * TAILLE / 2
             oy = nb_lignes * TAILLE / 2
 
             for x in range(nb_lignes):
                 for y in range(nb_cols):
                     px, py = ox + y * TAILLE, oy - x * TAILLE
-
+                        #  couleur
                     if self.lab[x][y] == 1:
                         color = "black"
                     elif (x, y) == self.depart:
@@ -195,7 +195,7 @@ class Labyrinte:
                     t.end_fill()
 
             ecran.update()
-
+                #dessin du chemin
             if chemin:
                 ecran.tracer(1)
                 t.penup()
@@ -204,6 +204,8 @@ class Labyrinte:
 
                 for i, etape in enumerate(chemin):
                     coord_tuple = etape._nom
+
+                 #aller au centre de la case
 
                     cx = ox + coord_tuple[1] * TAILLE + TAILLE / 2
                     cy = oy - coord_tuple[0] * TAILLE - TAILLE / 2
