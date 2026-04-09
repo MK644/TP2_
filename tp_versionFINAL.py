@@ -29,8 +29,8 @@ class Labyrinte:
             if len(parties) != 2:
                 raise ValueError("Format invalide")
             try:
-                if self.lab[int(parties[0])][int(parties[1])] == 0:
-                    return (int(parties[0].strip()), int(parties[1].strip()))
+                if self.lab[int(parties[1])][int(parties[0])] == 0:
+                    return (int(parties[1].strip()), int(parties[0].strip()))
                 else:
                     print("point de départ ou arrivée invalide")
                     return None
@@ -92,12 +92,12 @@ class Labyrinte:
                 chemin.pop() #si la fonction recule, elle enleve le point qu'elle avait parcourue
                 return False
 
-            if parcours_aux(G, G.sommet(depart)):
-                print(f"Félicitation ! vous avez réussi à trouver l'arrivée qui est la case : {nomarrivée} par le chemin: {[str(s._nom) for s in chemin]}")
-                return chemin
-            else:
-                print('Aucun chemin.')
-                return None
+        if parcours_aux(G, G.sommet(depart)):
+            print("Sommets visités :", [str((s._nom[1],s._nom[0])) for s in chemin])
+            return chemin
+        else:
+            print('Aucun chemin.')
+            return None
 
     #bfs
     def parcours_largeur_laby(self, G, depart, arrivee):
@@ -108,9 +108,9 @@ class Labyrinte:
             marque = set()
             chemin=[] #chemin des point parcouru
             parent={} # dictionnaire permettant de savoir l'origine de chaque point parcourue
+            parent[G.sommet(depart)] = None #le point de départ n'a pas d'origine
             depart=G.sommet(depart)
             arrivee=G.sommet(arrivee)
-            parent[depart] = None #le point de départ n'a pas d'origine
             nom_arrivee = arrivee._nom
             f = File()
             f.enfile(depart) #enfile le depart
@@ -128,7 +128,7 @@ class Labyrinte:
                                                                         # pas dans l'ensemble sinon elle tourne en rond
                             f.enfile(voisin)
                             parent[voisin] = s
-            if f.estvide():
+            if arrivee not in parent:
 
                 print("Aucun chemin trouvé")
                 return None
@@ -137,9 +137,7 @@ class Labyrinte:
                 chemin.append(courant)
                 courant = parent.get(courant) #remplace le point actuelle par son origine
             chemin.reverse()
-            dist = len(chemin) - 1
-            print(f"Félicitation ! vous arrivez à l'arrivée qui est la case: {nom_arrivee} par le chemin: {[str(s._nom) for s in chemin]}")
-            print(f"C'est le chemin le plus court pour parcourir ce labyrinthe et la distance totale est de : {dist} arêtes")
+            print("Sommets visités :", [str((s._nom[1],s._nom[0]))for s in chemin])
             return chemin
 
 
@@ -150,12 +148,17 @@ class Labyrinte:
         return self.parcours_largeur_laby(self.objet,self.depart,self.arrivee)
 
     def visualiser(self, chemin, titre="Solution Labyrinthe", couleur_chemin="blue"):
-        #On calcule la distance  ici
+        """
+        chemin : la liste des objets Sommet renvoyée par tes fonctions de solution
+        """
+        # On calcule la distance directement ici au lieu de la demander aux algos
+        # La distance est le nombre de cases du chemin - 1 (les arêtes)
         if chemin ==None:
             return None
         else:
             distance = len(chemin) - 1 if chemin else 0
 
+            # On récupère les dimensions depuis self.lab (puisque self.nb_lignes n'est pas défini dans le __init__)
             nb_lignes = len(self.lab)
             nb_cols = len(self.lab[0])
             TAILLE = 30
@@ -167,14 +170,17 @@ class Labyrinte:
 
             t = turtle.Turtle()
             t.hideturtle()
-              # alcul pour centrer parfaitement
+
+            # Calcul pour centrer parfaitement
             ox = -nb_cols * TAILLE / 2
             oy = nb_lignes * TAILLE / 2
 
+            # Dessin de la grille
             for x in range(nb_lignes):
                 for y in range(nb_cols):
                     px, py = ox + y * TAILLE, oy - x * TAILLE
-                        #  couleur
+
+                    # Choix de la couleur
                     if self.lab[x][y] == 1:
                         color = "black"
                     elif (x, y) == self.depart:
@@ -195,7 +201,8 @@ class Labyrinte:
                     t.end_fill()
 
             ecran.update()
-                #dessin du chemin
+
+            # Dessin du chemin
             if chemin:
                 ecran.tracer(1)
                 t.penup()
@@ -203,10 +210,11 @@ class Labyrinte:
                 t.pencolor(couleur_chemin)
 
                 for i, etape in enumerate(chemin):
+                    # Tes algos retournent des objets "Sommet" de graphelib.
+                    # L'attribut _nom contient déjà le tuple de coordonnées (x, y) ! Pas besoin de eval().
                     coord_tuple = etape._nom
 
-                 #aller au centre de la case
-
+                    # Aller au centre de la case
                     cx = ox + coord_tuple[1] * TAILLE + TAILLE / 2
                     cy = oy - coord_tuple[0] * TAILLE - TAILLE / 2
                     t.goto(cx, cy)
@@ -221,9 +229,9 @@ class Labyrinte:
 
 
 
-c = Labyrinte(laby, '(0,0)', '(10,8)')
+c = Labyrinte(laby, '(1,0)', '(4,7)')
 c.solutiondfs()
-print()
-c.solutionbfs()
 chemin_bfs = c.solutionbfs()
-c.visualiser(chemin_bfs, titre="Solution BFS", couleur_chemin="blue")
+
+# On passe ce chemin directement à la visualisation
+c.visualiser(chemin_bfs, titre="Solution DFS", couleur_chemin="blue")
