@@ -137,7 +137,7 @@ class Labyrinte:
                 chemin.append(courant)
                 courant = parent.get(courant) #remplace le point actuelle par son origine
             chemin.reverse()
-            print(f"Félicitation ! vous arrivez à l'arrivée qui est la case: {nom_arrivee} par le chemin: {[str((s._nom[1],s._nom[0])) for s in chemin]}")
+            print(f"Félicitation ! vous avez réussi à trouver l'arrivée qui est la case :  {nom_arrivee} par le chemin: {[str((s._nom[1],s._nom[0])) for s in chemin]}")
           
             return chemin
 
@@ -149,17 +149,15 @@ class Labyrinte:
         return self.parcours_largeur_laby(self.objet,self.depart,self.arrivee)
 
     def visualiser(self, chemin, titre="Solution Labyrinthe", couleur_chemin="blue"):
-        """
-        chemin : la liste des objets Sommet renvoyée par tes fonctions de solution
-        """
-        # On calcule la distance directement ici au lieu de la demander aux algos
-        # La distance est le nombre de cases du chemin - 1 (les arêtes)
+      
+        # On calcule la distance 
+      
         if chemin ==None:
             return None
         else:
             distance = len(chemin) - 1 if chemin else 0
 
-            # On récupère les dimensions depuis self.lab (puisque self.nb_lignes n'est pas défini dans le __init__)
+            # On récupère les dimensions 
             nb_lignes = len(self.lab)
             nb_cols = len(self.lab[0])
             TAILLE = 30
@@ -172,16 +170,16 @@ class Labyrinte:
             t = turtle.Turtle()
             t.hideturtle()
 
-            # Calcul pour centrer parfaitement
+            # Calcul pour centrer 
             ox = -nb_cols * TAILLE / 2
             oy = nb_lignes * TAILLE / 2
 
-            # Dessin de la grille
+            # Dessin Mika
             for x in range(nb_lignes):
                 for y in range(nb_cols):
                     px, py = ox + y * TAILLE, oy - x * TAILLE
 
-                    # Choix de la couleur
+                    # couleur
                     if self.lab[x][y] == 1:
                         color = "black"
                     elif (x, y) == self.depart:
@@ -203,7 +201,7 @@ class Labyrinte:
 
             ecran.update()
 
-            # Dessin du chemin
+            # Dessin chemin 
             if chemin:
                 ecran.tracer(1)
                 t.penup()
@@ -212,7 +210,7 @@ class Labyrinte:
 
                 for i, etape in enumerate(chemin):
                     # Tes algos retournent des objets "Sommet" de graphelib.
-                    # L'attribut _nom contient déjà le tuple de coordonnées (x, y) ! Pas besoin de eval().
+                    
                     coord_tuple = etape._nom
 
                     # Aller au centre de la case
