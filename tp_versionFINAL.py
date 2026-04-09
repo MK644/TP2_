@@ -69,14 +69,14 @@ class Labyrinte:
             return None
         else:
             arrivee = G.sommet(arrivee)
-            nomarrivée = arrivee._nom
+            nom_arrivee = arrivee._nom
             marque = set()  # ensemble des sommets deja visité
             chemin = []  # liste des sommet parcourue qui amène au sommet arrivée
 
             def parcours_aux(G, som):
                 chemin.append(som)  # ajoute le sommet parcouru à la liste
 
-                if som._nom == nomarrivée:  # la fonction vérifie si le point visité est l'arrivée
+                if som._nom == nom_arrivee:  # la fonction vérifie si le point visité est l'arrivée
 
                     return True
 
