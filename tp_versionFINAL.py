@@ -1,3 +1,6 @@
+
+# TP2 realiser avec beaucoup de passion pour aziz fait par Mika Breton Le philosophe ainsi que Olivier Dorismond-Chaput
+
 from pilefile import Pile, File
 from graphelib import Graphe
 
